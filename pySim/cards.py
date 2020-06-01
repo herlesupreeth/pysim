@@ -405,6 +405,13 @@ class UsimCard(Card):
 						EF_USIM_ADF_map['ePDGIdEm'], epdgidem_tlv)
 		return sw
 
+	def read_ePDGSelection_em(self):
+		(res, sw) = self._scc.read_binary(EF_USIM_ADF_map['ePDGSelectionEm'])
+		if sw == '9000':
+			return (format_ePDGSelection(res), sw)
+		else:
+			return (None, sw)
+
 	def update_ePDGSelection_em(self, mcc, mnc):
 		(res, sw) = self._scc.read_binary(EF_USIM_ADF_map['ePDGSelectionEm'], length=None, offset=0)
 		if sw == '9000':

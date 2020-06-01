@@ -317,6 +317,16 @@ class UsimCard(Card):
 			(res, sw) = self._scc.update_binary(EF_USIM_ADF_map['UST'], content)
 		return sw
 
+	def update_epdgid_em(self, epdgidem):
+		addr_type = get_addr_type(epdgidem)
+		if addr_type == None:
+			raise ValueError("Unknown Emergency ePDG Id address type or invalid address provided")
+		size = self._scc.binary_size(EF_USIM_ADF_map['ePDGIdEm']) * 2
+		epdgidem_tlv = rpad(enc_addr_tlv(epdgidem, ('%02x' % addr_type)), size)
+		data, sw = self._scc.update_binary(
+						EF_USIM_ADF_map['ePDGIdEm'], epdgidem_tlv)
+		return sw
+
 class IsimCard(Card):
 	def __init__(self, ssc):
 		super(IsimCard, self).__init__(ssc)
@@ -1442,6 +1452,13 @@ class SysmoISIMSJA2(UsimCard, IsimCard):
 				sw = self.update_ust(115, 0)
 				if sw != '9000':
 					print("Programming UST failed with code %s"%sw)
+
+			# update EF.ePDGIdEm in ADF.USIM
+			if self.file_exists(EF_USIM_ADF_map['ePDGIdEm']):
+				if p.get('epdgid'):
+					sw = self.update_epdgid_em(p['epdgid'])
+					if sw != '9000':
+						print("Programming Emergency ePDGId failed with code %s"%sw)
 
 		return
 

@@ -327,6 +327,12 @@ class UsimCard(Card):
 						EF_USIM_ADF_map['ePDGIdEm'], epdgidem_tlv)
 		return sw
 
+	def update_ePDGSelection_em(self, mcc, mnc):
+		(res, sw) = self._scc.read_binary(EF_USIM_ADF_map['ePDGSelectionEm'], length=None, offset=0)
+		if sw == '9000':
+			(res, sw) = self._scc.update_binary(EF_USIM_ADF_map['ePDGSelectionEm'], enc_ePDGSelection(res, mcc, mnc))
+		return sw
+
 class IsimCard(Card):
 	def __init__(self, ssc):
 		super(IsimCard, self).__init__(ssc)
@@ -1459,6 +1465,13 @@ class SysmoISIMSJA2(UsimCard, IsimCard):
 					sw = self.update_epdgid_em(p['epdgid'])
 					if sw != '9000':
 						print("Programming Emergency ePDGId failed with code %s"%sw)
+
+			# update EF.ePDGSelectionEm in ADF.USIM
+			if self.file_exists(EF_USIM_ADF_map['ePDGSelectionEm']):
+				if p.get('mcc') and p.get('mnc'):
+					sw = self.update_ePDGSelection_em(p['mcc'], p['mnc'])
+					if sw != '9000':
+						print("Programming Emergency ePDGSelection failed with code %s"%sw)
 
 		return
 

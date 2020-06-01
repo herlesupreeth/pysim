@@ -172,6 +172,9 @@ ePDGSelection:
 	ffffffffffff # unused
 	ffffffffffff # unused
 
+ePDGIdEm:
+	Not available
+
 P-CSCF:
 	Not available
 	Not available

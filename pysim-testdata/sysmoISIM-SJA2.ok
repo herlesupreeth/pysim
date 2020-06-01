@@ -175,6 +175,12 @@ ePDGSelection:
 ePDGIdEm:
 	Not available
 
+ePDGSelectionEm:
+	00f110000100 # MCC: 001 MNC: 001 ePDG Priority: 0001 ePDG FQDN format: Operator Identifier FQDN
+	ffffffffffff # unused
+	ffffffffffff # unused
+	ffffffffffff # unused
+
 P-CSCF:
 	Not available
 	Not available

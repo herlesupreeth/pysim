@@ -388,6 +388,13 @@ class UsimCard(Card):
 			(res, sw) = self._scc.update_binary(EF_USIM_ADF_map['UST'], content)
 		return sw
 
+	def read_epdgid_em(self):
+		(res, sw) = self._scc.read_binary(EF_USIM_ADF_map['ePDGIdEm'])
+		if sw == '9000':
+			return (dec_addr_tlv(res), sw)
+		else:
+			return (None, sw)
+
 	def update_epdgid_em(self, epdgidem):
 		addr_type = get_addr_type(epdgidem)
 		if addr_type == None:

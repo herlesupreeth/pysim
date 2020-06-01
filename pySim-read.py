@@ -268,6 +268,17 @@ if __name__ == '__main__':
 		except Exception as e:
 			print("ePDGSelection: Can't read file -- " + str(e))
 
+		#EF.ePDGIdEm - Emergency ePDG Identifier
+		try:
+			if card.file_exists(EF_USIM_ADF_map['ePDGIdEm']):
+				(res, sw) = card.read_epdgid_em()
+				if sw == '9000':
+					print("ePDGIdEm:\n%s" % (len(res) and res or '\tNot available\n',))
+				else:
+					print("ePDGIdEm: Can't read, response code = %s" % (sw,))
+		except Exception as e:
+			print("ePDGIdEm: Can't read file -- " + str(e))
+
 	# Select ISIM application by its AID
 	data, sw = card.select_adf_by_aid(adf="isim")
 	if sw == '9000':

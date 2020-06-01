@@ -1369,60 +1369,15 @@ class SysmoISIMSJA2(UsimCard, IsimCard):
 		if p.get('opc'):
 			self._scc.update_binary('6f20', p['opc'], 17)
 
-		# update EF-USIM_AUTH_KEY in ADF.ISIM
-		if '9000' == self.select_adf_by_aid(adf="isim"):
-			if p.get('ki'):
-				self._scc.update_binary('af20', p['ki'], 1)
-			if p.get('opc'):
-				self._scc.update_binary('af20', p['opc'], 17)
-
-			# update EF.P-CSCF in ADF.ISIM
-			if self.file_exists(EF_ISIM_ADF_map['PCSCF']):
-				if p.get('pcscf'):
-					sw = self.update_pcscf(p['pcscf'])
-				else:
-					sw = self.update_pcscf("")
-				if sw != '9000':
-					print("Programming P-CSCF failed with code %s"%sw)
-
-
-			# update EF.DOMAIN in ADF.ISIM
-			if self.file_exists(EF_ISIM_ADF_map['DOMAIN']):
-				if p.get('ims_hdomain'):
-					sw = self.update_domain(domain=p['ims_hdomain'])
-				else:
-					sw = self.update_domain()
-
-				if sw != '9000':
-					print("Programming Home Network Domain Name failed with code %s"%sw)
-
-			# update EF.IMPI in ADF.ISIM
-			# TODO: Validate IMPI input
-			if self.file_exists(EF_ISIM_ADF_map['IMPI']):
-				if p.get('impi'):
-					sw = self.update_impi(p['impi'])
-				else:
-					sw = self.update_impi()
-				if sw != '9000':
-					print("Programming IMPI failed with code %s"%sw)
-
-			# update EF.IMPU in ADF.ISIM
-			# TODO: Validate IMPU input
-			# Support multiple IMPU if there is enough space
-			if self.file_exists(EF_ISIM_ADF_map['IMPU']):
-				if p.get('impu'):
-					sw = self.update_impu(p['impu'])
-				else:
-					sw = self.update_impu()
-				if sw != '9000':
-					print("Programming IMPU failed with code %s"%sw)
-
+		auth_key = None
 		if '9000' == self.select_adf_by_aid():
-			# update EF-USIM_AUTH_KEY in ADF.USIM
 			if p.get('ki'):
 				self._scc.update_binary('af20', p['ki'], 1)
 			if p.get('opc'):
 				self._scc.update_binary('af20', p['opc'], 17)
+			# Fetch the contents of EF-USIM_AUTH_KEY in ADF.USIM
+			# There is a mismatch in Algorith between USIM and ISIM
+			auth_key, sw = self._scc.read_binary('af20')
 
 			# update EF.EHPLMN in ADF.USIM
 			if self.file_exists(EF_USIM_ADF_map['EHPLMN']):
@@ -1493,6 +1448,55 @@ class SysmoISIMSJA2(UsimCard, IsimCard):
 					sw = self.update_ePDGSelection_em(p['mcc'], p['mnc'])
 					if sw != '9000':
 						print("Programming Emergency ePDGSelection failed with code %s"%sw)
+
+		# update EF-USIM_AUTH_KEY in ADF.ISIM
+		if '9000' == self.select_adf_by_aid(adf="isim"):
+			if p.get('ki'):
+				self._scc.update_binary('af20', p['ki'], 1)
+			if p.get('opc'):
+				self._scc.update_binary('af20', p['opc'], 17)
+			self._scc.update_binary('af20', auth_key)
+
+			# update EF.P-CSCF in ADF.ISIM
+			if self.file_exists(EF_ISIM_ADF_map['PCSCF']):
+				if p.get('pcscf'):
+					sw = self.update_pcscf(p['pcscf'])
+				else:
+					sw = self.update_pcscf("")
+				if sw != '9000':
+					print("Programming P-CSCF failed with code %s"%sw)
+
+
+			# update EF.DOMAIN in ADF.ISIM
+			if self.file_exists(EF_ISIM_ADF_map['DOMAIN']):
+				if p.get('ims_hdomain'):
+					sw = self.update_domain(domain=p['ims_hdomain'])
+				else:
+					sw = self.update_domain()
+
+				if sw != '9000':
+					print("Programming Home Network Domain Name failed with code %s"%sw)
+
+			# update EF.IMPI in ADF.ISIM
+			# TODO: Validate IMPI input
+			if self.file_exists(EF_ISIM_ADF_map['IMPI']):
+				if p.get('impi'):
+					sw = self.update_impi(p['impi'])
+				else:
+					sw = self.update_impi()
+				if sw != '9000':
+					print("Programming IMPI failed with code %s"%sw)
+
+			# update EF.IMPU in ADF.ISIM
+			# TODO: Validate IMPU input
+			# Support multiple IMPU if there is enough space
+			if self.file_exists(EF_ISIM_ADF_map['IMPU']):
+				if p.get('impu'):
+					sw = self.update_impu(p['impu'])
+				else:
+					sw = self.update_impu()
+				if sw != '9000':
+					print("Programming IMPU failed with code %s"%sw)
 
 		return
 

@@ -467,6 +467,14 @@ class IsimCard(Card):
 				uiari_recs += "UICC IARI: Can't read, response code = %s\n" % (sw)
 		return uiari_recs
 
+	def read_ist(self):
+		(res, sw) = self._scc.read_binary(EF_ISIM_ADF_map['IST'])
+		if sw == '9000':
+			# Print those which are available
+			return ([res, dec_st(res, table="isim")], sw)
+		else:
+			return ([None, None], sw)
+
 class _MagicSimBase(Card):
 	"""
 	Theses cards uses several record based EFs to store the provider infos,

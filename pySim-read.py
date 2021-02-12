@@ -372,17 +372,19 @@ if __name__ == '__main__':
 		except Exception as e:
 			print("UICC IARI: Can't read file -- " + str(e))
 
-	# Check whether we have th AID of ISIM, if so select it by its AID
-	# EF.IST - File Id in ADF ISIM : 6f07
-	if '9000' == card.select_adf_by_aid(adf="isim"):
 		# EF.IST
-		(res, sw) = card.read_binary('6f07')
-		if sw == '9000':
-			print("ISIM Service Table: %s" % res)
-			# Print those which are available
-			print("%s" % dec_st(res, table="isim"))
-		else:
-			print("ISIM Service Table: Can't read, response code = %s" % (sw,))
+		try:
+			if isim_card.file_exists(EF_ISIM_ADF_map['IST']):
+				# res[0] - EF content of IST
+				# res[1] - Human readable format of services marked available in IST
+				(res, sw) = isim_card.read_ist()
+				if sw == '9000':
+					print("ISIM Service Table: %s" % res[0])
+					print("%s" % res[1])
+				else:
+					print("ISIM Service Table: Can't read, response code = %s" % (sw,))
+		except Exception as e:
+			print("ISIM Service Table: Can't read file -- " + str(e))
 
 	# Done for this card and maybe for everything ?
 	print("Done !\n")

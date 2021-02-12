@@ -1541,6 +1541,12 @@ class SysmoISIMSJA2(UsimCard, IsimCard):
 				if sw != '9000':
 					print("Programming IMPU failed with code %s"%sw)
 
+			# Initialize EF.AD
+			if self.file_exists(EF_ISIM_ADF_map['AD']):
+				sw = self.update_isim_ad()
+				if sw != '9000':
+					print("Programming AD failed with code %s"%sw)
+
 		return
 
 

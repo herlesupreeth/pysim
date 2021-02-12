@@ -475,6 +475,13 @@ class IsimCard(Card):
 		else:
 			return ([None, None], sw)
 
+	def update_ist(self, service, bit=1):
+		(res, sw) = self._scc.read_binary(EF_ISIM_ADF_map['IST'])
+		if sw == '9000':
+			content = enc_st(res, service, bit)
+			(res, sw) = self._scc.update_binary(EF_ISIM_ADF_map['IST'], content)
+		return sw
+
 class _MagicSimBase(Card):
 	"""
 	Theses cards uses several record based EFs to store the provider infos,

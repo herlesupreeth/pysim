@@ -386,5 +386,13 @@ if __name__ == '__main__':
 		except Exception as e:
 			print("ISIM Service Table: Can't read file -- " + str(e))
 
+		# EF.AD
+		try:
+			if isim_card.file_exists(EF_ISIM_ADF_map['AD']):
+				res = isim_card.read_isim_ad()
+				print("ISIM Administrative data: %s" % (len(res) and res or 'Not available\n',))
+		except Exception as e:
+			print("ISIM Administrative data: : Can't read file -- " + str(e))
+
 	# Done for this card and maybe for everything ?
 	print("Done !\n")

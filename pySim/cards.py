@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from pySim.ts_51_011 import EF, DF
+from pySim.ts_51_011 import EF, DF, EF_AD_mode_map
 from pySim.ts_31_102 import EF_USIM_ADF_map
 from pySim.ts_31_103 import EF_ISIM_ADF_map
 from pySim.utils import *
@@ -494,6 +494,21 @@ class IsimCard(Card):
 			content = data[0:6]
 		data, sw = self._scc.update_binary(EF_ISIM_ADF_map['AD'], content)
 		return sw
+
+	def read_isim_ad(self):
+		data, sw = self._scc.read_binary(EF_ISIM_ADF_map['AD'], length=None, offset=0)
+		ad_str = ""
+		if sw == '9000':
+			ad_str += data + "\n"
+			if data[:2] in EF_AD_mode_map:
+				ad_str += "\tMS operation mode: %s\n" % (EF_AD_mode_map[data[:2]],)
+			else:
+				ad_str += "\tMS operation mode: (unknown 0x%s)\n" % (data[:2],)
+			if int(data[4:6], 16) & 0x01:
+				ad_str += "\tCiphering Indicator: enabled\n"
+			else:
+				ad_str += "\tCiphering Indicator: disabled\n"
+		return ad_str
 
 class _MagicSimBase(Card):
 	"""

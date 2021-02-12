@@ -482,6 +482,19 @@ class IsimCard(Card):
 			(res, sw) = self._scc.update_binary(EF_ISIM_ADF_map['IST'], content)
 		return sw
 
+	def update_isim_ad(self, ad=None):
+		data, sw = self._scc.read_binary(EF_ISIM_ADF_map['AD'], length=None, offset=0)
+		# Reset contents to EF.AD in case the file is uninintalized
+		if data.lower() == "ffffff":
+			data = "000000"
+
+		if ad:
+			content = ad
+		else:
+			content = data[0:6]
+		data, sw = self._scc.update_binary(EF_ISIM_ADF_map['AD'], content)
+		return sw
+
 class _MagicSimBase(Card):
 	"""
 	Theses cards uses several record based EFs to store the provider infos,
